@@ -11,7 +11,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var (
-	version = "v1.0.0"
+	version = "v1.0.1"
 	p       = &param{}
 	rootCmd = &cobra.Command{
 		Use:   "hosts",
@@ -26,8 +26,11 @@ var (
 )
 
 type param struct {
-	UpdateForce bool
-	ConfigSet   string
+	Skip  bool
+	Force bool
+	Add   string
+	Url   string
+	Name  string
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

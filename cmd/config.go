@@ -19,8 +19,8 @@ var configCmd = &cobra.Command{
 			./hosts config -s k=v
 		`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !strings.EqualFold(p.ConfigSet, "") {
-			params := strings.Split(p.ConfigSet, "=")
+		if !strings.EqualFold(p.Add, "") {
+			params := strings.Split(p.Add, "=")
 			if len(params) != 2 {
 				log.Fatalln("set param must contain = ")
 			}
@@ -34,5 +34,5 @@ var configCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(configCmd)
-	configCmd.Flags().StringVarP(&p.ConfigSet, "set", "s", "", "")
+	configCmd.Flags().StringVarP(&p.Add, "add", "A", "", "")
 }

@@ -28,7 +28,8 @@ var updateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateCmd)
-	rootCmd.Flags().BoolVarP(&p.UpdateForce, "force", "f", false, "")
+	rootCmd.Flags().BoolVarP(&p.Skip, "skip", "S", false, "")
+	rootCmd.Flags().BoolVarP(&p.Force, "force", "F", false, "")
 }
 
 func readSource(header, footer *[]string) {
@@ -68,10 +69,14 @@ func readSource(header, footer *[]string) {
 }
 
 func updateSource() {
+	temp := filepath.Join(WorkDir(), hostsTmp)
+	if !p.Skip {
+		download(viper.GetString(hostsUrl), temp)
+	}
 	header := make([]string, 0)
 	footer := make([]string, 0)
 	body := make([]string, 0)
-	f, err := os.Open(filepath.Join(WorkDir(), hostsTmp))
+	f, err := os.Open(temp)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -84,7 +89,7 @@ func updateSource() {
 	for scanner.Scan() {
 		body = append(body, scanner.Text())
 	}
-	if !p.UpdateForce {
+	if !p.Force {
 		readSource(&header, &footer)
 	}
 	hs := viper.GetString(hostsPath)

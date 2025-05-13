@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // downloadCmd represents the download command
@@ -19,14 +20,23 @@ var downloadCmd = &cobra.Command{
 			./hosts download
 		`,
 	Run: func(cmd *cobra.Command, args []string) {
-		url := viper.GetString(hostsUrl)
-		destPath := filepath.Join(WorkDir(), hostsTmp)
-		download(url, destPath)
+		url := p.Url
+		if strings.EqualFold(url, "") {
+			url = viper.GetString(hostsUrl)
+		}
+		name := p.Name
+		if strings.EqualFold(name, "") {
+			name = hostsTmp
+		}
+		filename := filepath.Join(WorkDir(), hostsTmp)
+		download(url, filename)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(downloadCmd)
+	rootCmd.Flags().StringVarP(&p.Url, "url", "U", "", "")
+	rootCmd.Flags().StringVarP(&p.Name, "name", "N", "", "")
 }
 
 func download(url, filename string) {
