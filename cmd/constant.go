@@ -13,12 +13,16 @@ const (
 	configPath = "config_path"
 	hostsPath  = "hosts_path"
 	hostsUrl   = "hosts_url"
+	tagStart   = "tag_start"
+	tagEnd     = "tag_end"
 
 	configName = "config.yaml"
-	hostsTpl   = "hosts.tpl"
 	hostsTmp   = "hosts.tmp"
-	tagStart   = "# GitHub IP hosts Start"
-	tagEnd     = "# GitHub IP hosts End"
+
+	defaultHostsPath = "/etc/hosts"
+	defaultHostsUrl  = "https://github.com/ittuann/GitHub-IP-hosts/raw/refs/heads/main/hosts"
+	defaultTagStart  = "# GitHub IP hosts Start"
+	defaultTagEnd    = "# GitHub IP hosts End"
 )
 
 func configNamePer() string {

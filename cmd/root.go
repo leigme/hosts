@@ -1,10 +1,6 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"log"
 	"os"
@@ -15,7 +11,6 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var (
-	workDir string
 	p       = &param{}
 	rootCmd = &cobra.Command{
 		Use:   "hosts",
@@ -33,18 +28,13 @@ to quickly create a Cobra application.`,
 )
 
 type param struct {
-	ConfigInit         bool
-	ConfigDetail       bool
-	UpdateForce        bool
-	DownloadMaxRetries int
-	ConfigSet          string
+	UpdateForce bool
+	ConfigSet   string
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(wd string) {
-	fmt.Println(wd)
-	workDir = wd
+func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -53,36 +43,63 @@ func Execute(wd string) {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func initConfig() {
-	if _, err := os.Stat(workDir); err != nil {
-		if !os.IsNotExist(err) {
-			log.Fatalln("check work dir fail!", err)
-		}
-		err = os.MkdirAll(workDir, os.ModePerm)
-		if err != nil {
-			log.Fatalln("create work dir fail!", err)
-		}
-	}
-	viper.AddConfigPath(workDir)
-	_, err := os.Stat(filepath.Join(workDir, configName))
+	viper.AddConfigPath(WorkDir())
+	_, err := os.Stat(filepath.Join(WorkDir(), configName))
 	if err != nil {
 		if !os.IsNotExist(err) {
 			log.Fatalln(err)
 		}
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(configNamePer())
-		viper.SetDefault(hostsPath, "/etc/hosts")
-		viper.SetDefault(hostsUrl, "https://github.com/ittuann/GitHub-IP-hosts/raw/refs/heads/main/hosts")
+		viper.SetDefault(hostsPath, defaultHostsPath)
+		viper.SetDefault(hostsUrl, defaultHostsUrl)
+		viper.SetDefault(tagStart, defaultTagStart)
+		viper.SetDefault(tagEnd, defaultTagEnd)
 		if err = viper.SafeWriteConfig(); err != nil {
 			log.Fatalln(err)
 		}
 	} else {
-		viper.SetConfigFile(filepath.Join(workDir, configName))
+		viper.SetConfigFile(filepath.Join(WorkDir(), configName))
 	}
 	if err = viper.ReadInConfig(); err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func WorkDir() (workDir string) {
+	// 获取可执行文件的名称
+	exe, err := os.Executable()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	appName := filepath.Base(exe)
+
+	if workDir, err = os.Getwd(); err != nil {
+		log.Fatalln(err)
+	}
+
+	if _, err = os.Stat(filepath.Join(workDir, "."+appName)); err != nil {
+		if !os.IsNotExist(err) {
+			log.Fatalln(err)
+		}
+		workDir, err = os.UserHomeDir()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
+
+	workDir = filepath.Join(workDir, "."+appName)
+
+	if _, err = os.Stat(workDir); err != nil {
+		if !os.IsNotExist(err) {
+			log.Fatalln(err)
+		}
+		if err = os.MkdirAll(workDir, os.ModePerm); err != nil {
+			log.Fatalln(err)
+		}
+	}
+	return
 }

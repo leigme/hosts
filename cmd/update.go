@@ -52,7 +52,7 @@ func readSource(header, footer *[]string) {
 		if strings.EqualFold(line, "") {
 			continue
 		}
-		if strings.EqualFold(tagStart, line) {
+		if strings.EqualFold(viper.GetString(tagStart), line) {
 			start = true
 			continue
 		}
@@ -60,7 +60,7 @@ func readSource(header, footer *[]string) {
 			*header = append(*header, line)
 			continue
 		}
-		if strings.EqualFold(tagEnd, line) {
+		if strings.EqualFold(viper.GetString(tagEnd), line) {
 			end = true
 			continue
 		}
@@ -74,7 +74,7 @@ func updateSource() {
 	header := make([]string, 0)
 	footer := make([]string, 0)
 	body := make([]string, 0)
-	f, err := os.Open(filepath.Join(workDir, hostsTmp))
+	f, err := os.Open(filepath.Join(WorkDir(), hostsTmp))
 	if err != nil {
 		log.Fatalln(err)
 	}
