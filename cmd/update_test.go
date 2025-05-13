@@ -35,7 +35,6 @@ func Test_readSource(t *testing.T) {
 }
 
 func Test_updateSource(t *testing.T) {
-	workDir = "/home/leig/.___config_i"
 	viper.SetConfigFile("/home/leig/.___config_i/config.yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalln(err)
